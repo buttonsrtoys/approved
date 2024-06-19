@@ -1,0 +1,24 @@
+name: approved
+description: A project for implementing approval tests
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 0.0.1
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+#  gen_expects: ^0.2.2
+  gen_expects:
+    path: ../gen_expects
+  analyzer: ^6.4.1
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
