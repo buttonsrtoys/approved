@@ -31,15 +31,16 @@ class Approved {
   static Future<void> tearDownAll() async {
     final testPath = _testFilePath();
     final testDirectory = Directory(testPath);
-    final approvedFullPaths = testDirectory.filesWithExtension(_approvedExtension).map((file) => file.path).toSet();
-    final unapprovedFullPaths = testDirectory.filesWithExtension(_unapprovedExtension).map((file) => file.path).toSet();
+    final approvedFullPaths = testDirectory.filesWithExtension('.$_approvedExtension').map((file) => file.path).toSet();
+    final unapprovedFullPaths =
+        testDirectory.filesWithExtension('.$_unapprovedExtension').map((file) => file.path).toSet();
 
     for (final approvedFullPath in _executedApprovedFullPaths) {
       if (approvedFullPaths.contains(approvedFullPath)) {
         approvedFullPaths.remove(approvedFullPath);
       }
       final unapprovedFullPath = approvedFullPath.replaceAll(_approvedExtension, _unapprovedExtension);
-      if (unapprovedFullPaths.contains(approvedFullPath)) {
+      if (unapprovedFullPaths.contains(unapprovedFullPath)) {
         unapprovedFullPaths.remove(unapprovedFullPath);
       }
     }
