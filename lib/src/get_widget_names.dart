@@ -21,7 +21,7 @@ Future<Set<String>> getWidgetNames() async {
       });
     } else {
       final libPath = '${Directory.current.absolute.path}/lib';
-      stdout.write("package:approved: generating class names in '$libPath'...");
+      stdout.write("package:approved: searching for class names in $libPath...");
       extractWidgetNames(libPath).then((widgetsList) {
         if (!_widgetNamesDir.existsSync()) {
           _widgetNamesDir.createSync();

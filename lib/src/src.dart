@@ -5,8 +5,8 @@ import 'dart:io';
 
 import 'package:approved/src/common.dart';
 import 'package:approved/src/get_widget_names.dart';
+import 'package:approved/src/widget_meta/generate_widget_tests.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gen_expects/gen_expects.dart';
 
 import 'git_diffs.dart';
 
