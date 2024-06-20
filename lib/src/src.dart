@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:approved/src/common.dart';
 import 'package:approved/src/get_widget_names.dart';
-import 'package:approved/src/widget_meta/generate_widget_tests.dart';
+import 'package:approved/src/widget_meta/collect_widgets_meta_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'git_diffs.dart';
@@ -125,7 +125,7 @@ Future<void> Function(String, String) _globalApprovalTest = approvalTest;
 
 extension WidgetTesterApprovedExtension on WidgetTester {
   /// Returns the meta data for the widgets for comparison during the approval test
-  Future<String> get widgetsMetaString async {
+  Future<String> get widgetsString async {
     final completer = Completer<String>();
     assert(_widgetNames != null, '''$topBar begin package:approved error $topBar
     
@@ -138,7 +138,7 @@ extension WidgetTesterApprovedExtension on WidgetTester {
     
 $bottomBar  end package:approved error  $bottomBar''');
 
-    genExpectsOutput(
+    collectWidgetsMetaData(
       this,
       outputMeta: true,
       verbose: false,
@@ -146,6 +146,7 @@ $bottomBar  end package:approved error  $bottomBar''');
     ).then((stringList) {
       completer.complete(stringList.join('\n'));
     });
+
     return completer.future;
   }
 
@@ -163,7 +164,7 @@ $bottomBar  end package:approved error  $bottomBar''');
 
     // If no text passed, then get the widget meta from the widget tree
     if (textForReview == null) {
-      widgetsMetaString.then((value) {
+      widgetsString.then((value) {
         widgetsMetaCompleter.complete(value);
       });
     } else {

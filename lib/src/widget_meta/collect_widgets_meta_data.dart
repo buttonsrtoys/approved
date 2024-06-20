@@ -22,7 +22,7 @@ Map<String, List<String>> _enStringReverseLookup = <String, List<String>>{};
 /// [silent] determines whether to suppress output to console.
 /// [compareWithPrevious] determines whether only changed tests from the previous run are displayed
 /// [verbose] determines whether the cut-and-paste tip is shown (should be false inside generated widgetTests)
-Future<void> genExpects(
+Future<void> printExpects(
   WidgetTester tester, {
   Set<Type>? widgetTypes,
   Set<String>? widgetNames,
@@ -31,7 +31,7 @@ Future<void> genExpects(
   bool verbose = true,
   bool compareWithPrevious = true,
 }) async {
-  final text = await genExpectsOutput(
+  final text = await collectWidgetsMetaData(
     tester,
     widgetTypes: widgetTypes,
     widgetNames: widgetNames,
@@ -87,7 +87,7 @@ Future<void> addTextToIntlReverseLookup({
 /// [compareWithPrevious ] is true to compare the current states with previous to display diffs.
 /// [outputExpects] is true to print expect statements to console.
 /// [outputMeta] is true to output data to an approval-test file.
-Future<List<String>> genExpectsOutput(
+Future<List<String>> collectWidgetsMetaData(
   WidgetTester tester, {
   Set<Type>? widgetTypes,
   Set<String>? widgetNames,
