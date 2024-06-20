@@ -5,8 +5,8 @@ import 'dart:io';
 
 import 'package:approved/src/common.dart';
 import 'package:approved/src/get_widget_names.dart';
+import 'package:approved/src/widget_meta/generate_widget_tests.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gen_expects/gen_expects.dart';
 
 import 'git_diffs.dart';
 
@@ -31,15 +31,16 @@ class Approved {
   static Future<void> tearDownAll() async {
     final testPath = _testFilePath();
     final testDirectory = Directory(testPath);
-    final approvedFullPaths = testDirectory.filesWithExtension(_approvedExtension).map((file) => file.path).toSet();
-    final unapprovedFullPaths = testDirectory.filesWithExtension(_unapprovedExtension).map((file) => file.path).toSet();
+    final approvedFullPaths = testDirectory.filesWithExtension('.$_approvedExtension').map((file) => file.path).toSet();
+    final unapprovedFullPaths =
+        testDirectory.filesWithExtension('.$_unapprovedExtension').map((file) => file.path).toSet();
 
     for (final approvedFullPath in _executedApprovedFullPaths) {
       if (approvedFullPaths.contains(approvedFullPath)) {
         approvedFullPaths.remove(approvedFullPath);
       }
       final unapprovedFullPath = approvedFullPath.replaceAll(_approvedExtension, _unapprovedExtension);
-      if (unapprovedFullPaths.contains(approvedFullPath)) {
+      if (unapprovedFullPaths.contains(unapprovedFullPath)) {
         unapprovedFullPaths.remove(unapprovedFullPath);
       }
     }
