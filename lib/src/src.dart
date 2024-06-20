@@ -141,7 +141,7 @@ $bottomBar  end package:approved error  $bottomBar''');
     genExpectsOutput(
       this,
       outputMeta: true,
-      showTip: false,
+      verbose: false,
       widgetNames: Approved.widgetNames,
     ).then((stringList) {
       completer.complete(stringList.join('\n'));
