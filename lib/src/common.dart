@@ -1,7 +1,7 @@
 import 'dart:io';
 
-const topBar = '■■■■■■■■■■■■■■■■■■■■';
-const bottomBar = '■■■■■■■■■■■■■■■■■■■■';
+const topBar = '▶▶▶▶';
+const bottomBar = '◀◀◀◀';
 
 /// [String] extension
 extension StringApprovedExtension on String {
