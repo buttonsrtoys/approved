@@ -12,6 +12,7 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
+      await tester.printExpects();
       await tester.approvalTest('should display 0');
 
       await tester.tap(find.byType(FloatingActionButton));

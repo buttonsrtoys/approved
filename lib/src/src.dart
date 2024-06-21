@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:approved/src/common.dart';
 import 'package:approved/src/get_widget_names.dart';
-import 'package:approved/src/widget_meta/collect_widgets_meta_data.dart';
+import 'package:approved/src/widget_meta/collect_widgets_meta_data.dart' as wm;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'git_diffs.dart';
@@ -136,12 +136,14 @@ extension WidgetTesterApprovedExtension on WidgetTester {
     
 $bottomBar end package:approved error''');
 
-    collectWidgetsMetaData(
+    wm
+        .collectWidgetsMetaData(
       this,
       outputMeta: true,
       verbose: false,
       widgetNames: Approved.widgetNames,
-    ).then((stringList) {
+    )
+        .then((stringList) {
       completer.complete(stringList.join('\n'));
     });
 
@@ -172,6 +174,11 @@ $bottomBar end package:approved error''');
       resultCompleter.complete(_globalApprovalTest(updatedTestDescription, value));
     });
     return resultCompleter.future;
+  }
+
+  /// Output expect statements to the console.
+  Future<void> printExpects() {
+    return wm.printExpects(this);
   }
 }
 

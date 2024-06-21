@@ -6,18 +6,30 @@ An Flutter approval-tests library for quickly writing unit, widget, and integrat
 
 ## How package:approved works
 
-Instead of writing tests like this:
+Instead of writing this:
 
-    void main() {
-        testWidgets('Confirm all widgets appear', (WidgetTester tester) async {
-            await tester.pumpWidget(const MyApp());
+    testWidgets('smoke test', (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
 
-            await genExpects(tester);
-        });
+        expect(find.text('You have pushed the button this many times:'), findsOneWidget);
+        expect(find.text('0'), findsOneWidget);
+        expect(find.byWidgetPredicate(
+            (Widget widget) => widget is Text && widget.data == 'hello' && 
+            widget.key == ValueKey('myKey'),
+        ), findsOneWidget);
+        expect(find.text('Approved Example'), findsOneWidget);
     }
 
-Write them like this:
+Accomplish the same thing with this:
+
+    testWidgets('smoke test', (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
+
+        await tester.approvalTest();
+    }
 
 ## That's it!
 
-For questions or anything else GenExpects, feel free to create an issue or contact me.
+For questions or anything else Approved, feel free to create an issue or contact me.
