@@ -2,7 +2,7 @@
 
 ![approved](https://raw.githubusercontent.com/buttonsrtoys/approved/main/assets/approved_logo.png)
 
-An Flutter approval-tests library for quickly writing unit, widget, and integration tests.
+A Flutter approval-tests library for quickly writing unit, widget, and integration tests.
 
 ## How package:approved works
 

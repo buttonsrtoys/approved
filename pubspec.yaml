@@ -1,12 +1,11 @@
 name: approved
-description: A project for implementing approval tests
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
+description: A Flutter approval-tests library for quickly writing unit, widget, and integration tests.
+repository: https://github.com/buttonsrtoys/approved
+issue_tracker: https://github.com/buttonsrtoys/approved/issues
 version: 0.0.1
 
 environment:
   sdk: '>=3.4.1 <4.0.0'
-repository: https://github.com/buttonsrtoys/approved
 
 dependencies:
   flutter:
