@@ -1,6 +1,6 @@
 name: approved
 description: A Flutter approval-tests library for quickly writing unit, widget, and integration tests.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/buttonsrtoys/approved
 issue_tracker: https://github.com/buttonsrtoys/approved/issues
 
