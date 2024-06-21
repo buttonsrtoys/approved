@@ -1,4 +1,4 @@
-import 'package:approved/src/widget_meta/generate_widget_tests.dart';
+import 'package:approved/src/widget_meta/collect_widgets_meta_data.dart';
 import 'package:approved/src/widget_meta/matcher_types.dart';
 import 'package:approved/src/widget_meta/register_types.dart';
 import 'package:flutter/widgets.dart';

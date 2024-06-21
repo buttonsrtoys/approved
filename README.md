@@ -1,22 +1,35 @@
 # approved
 
-Implements approval tests for Flutter.
+![approved](https://raw.githubusercontent.com/buttonsrtoys/approved/main/assets/approved_logo.png)
 
-## Getting Started
+An Flutter approval-tests library for quickly writing unit, widget, and integration tests.
 
-This project is a starting point for a Flutter application.
+## How package:approved works
 
-A few resources to get you started if this is your first Flutter project:
+Instead of writing this:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+    testWidgets('smoke test', (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+        expect(find.text('You have pushed the button this many times:'), findsOneWidget);
+        expect(find.text('0'), findsOneWidget);
+        expect(find.byWidgetPredicate(
+            (Widget widget) => widget is Text && widget.data == 'hello' && 
+            widget.key == ValueKey('myKey'),
+        ), findsOneWidget);
+        expect(find.text('Approved Example'), findsOneWidget);
+    }
 
-## TODO
-- Approved.tearDownAll could warn users if old .(un)approved.txt files are hanging around.
-- Add skip: param.
-- dart run approved:clean // deletes the widget names file?
-- the stack trace ..._test.dart search should ensure /test/ is in the path
+Accomplish the same thing with this:
+
+    testWidgets('smoke test', (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
+
+        await tester.approvalTest();
+    }
+
+## That's it!
+
+For questions or anything else Approved, feel free to create an issue or contact me.
