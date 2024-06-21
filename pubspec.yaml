@@ -6,15 +6,13 @@ version: 0.0.1
 
 environment:
   sdk: '>=3.4.1 <4.0.0'
+repository: https://github.com/buttonsrtoys/approved
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_test:
     sdk: flutter
-#  gen_expects: ^0.2.2
-  gen_expects:
-    path: ../gen_expects
   analyzer: ^6.4.1
 
 dev_dependencies:

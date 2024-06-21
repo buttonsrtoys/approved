@@ -107,13 +107,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  gen_expects:
-    dependency: "direct main"
-    description:
-      path: "../gen_expects"
-      relative: true
-    source: path
-    version: "0.2.2"
   glob:
     dependency: transitive
     description:

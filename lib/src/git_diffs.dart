@@ -5,10 +5,10 @@ import 'dart:io';
 import 'common.dart';
 
 void printGitDiffs(String testDescription, String differences) {
-  print('$topBar begin package:approved output\n');
+  print(topBar);
   print("Results of git diff during approvalTest('$testDescription'):");
-  print(differences);
-  print('$bottomBar end package:approved output');
+  print(differences.trim());
+  print(bottomBar);
 }
 
 /// return the diff of two files
