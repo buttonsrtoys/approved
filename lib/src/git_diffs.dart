@@ -4,11 +4,13 @@ import 'dart:io';
 
 import 'common.dart';
 
-void printGitDiffs(String testDescription, String differences) {
+void printGitDiffs(String testDescription, String differences, bool showTip) {
   print(topBar);
   print("Results of git diff during approvalTest('$testDescription'):");
   print(differences.trim());
-  print("To review or approve this change, run 'dart run approved:review'");
+  if (showTip) {
+    print("● To review this test result, run 'dart run approved:review'");
+  }
   print(bottomBar);
 }
 

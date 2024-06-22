@@ -88,12 +88,14 @@ Future<void> approvalTest(
 
     if (_executedApprovedFullPaths.contains(approvedFullPath)) {
       _allTestsPassed = false;
-      throw Exception('''$topBar
-    An approvalTest with description '$testDescription' was already created in path '$outputPath'.
-    Try adding a unique description to approvedTest. E.g.,
+      print('''$topBar
+    A call to approvalTest with a prior test description '$testDescription' was detected in path '$outputPath'.
+    Approval tests must have unique descriptions. E.g.,
     
         await tester.approvalTest('my unique description');
 $bottomBar''');
+      throw Exception(
+          'approvalTest failed due to redundant description. See message above for instructions on how to fix.');
     }
 
     _executedApprovedFullPaths.add(approvedFullPath);
@@ -118,7 +120,7 @@ $bottomBar''');
 
       if (differences.isNotEmpty) {
         _allTestsPassed = false;
-        printGitDiffs(testDescription, differences);
+        printGitDiffs(testDescription, differences, true);
         throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
       }
     }

@@ -36,7 +36,7 @@ Future<void> processFile(File approvedFile, FileSystemEntity reviewFile) async {
 
   if (resultString.isNotEmpty || resultString.isNotEmpty) {
     String fileNameWithoutExtension = approvedFile.path.split('/').last.split('.').first;
-    printGitDiffs(fileNameWithoutExtension, resultString);
+    printGitDiffs(fileNameWithoutExtension, resultString, false);
 
     String? firstCharacter;
 
