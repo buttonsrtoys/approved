@@ -136,7 +136,7 @@ extension WidgetTesterApprovedExtension on WidgetTester {
   Future<String> get widgetsString async {
     final completer = Completer<String>();
     assert(_widgetNames != null, '''$topBar
-    Looks like Approved.initialize() was not called before running an approvalTest. Typically, 
+    It appears that Approved.initialize() was not called before running an approvalTest. Typically, 
     this issue is solved by calling Approved.initialize() from within setUpAll:
     
         void setUpAll(() async {

@@ -8,6 +8,7 @@ void printGitDiffs(String testDescription, String differences) {
   print(topBar);
   print("Results of git diff during approvalTest('$testDescription'):");
   print(differences.trim());
+  print("To review or approve this change, run 'dart run approved:review'");
   print(bottomBar);
 }
 
