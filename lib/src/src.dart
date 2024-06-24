@@ -83,7 +83,7 @@ Future<void> approvalTest(
     String outputPath = _testFilePath();
 
     final approvedFullPath = '$outputPath/$testDescription.$_approvedExtension';
-    final currentFullPath = '$outputPath/$testDescription.$_unapprovedExtension';
+    final unapprovedFullPath = '$outputPath/$testDescription.$_unapprovedExtension';
     String approvedText = '<No approved text yet>';
 
     if (_executedApprovedFullPaths.contains(approvedFullPath)) {
@@ -101,7 +101,7 @@ $bottomBar''');
     _executedApprovedFullPaths.add(approvedFullPath);
 
     final approvedFile = File(approvedFullPath);
-    final currentFile = File(currentFullPath);
+    final currentFile = File(unapprovedFullPath);
 
     if (approvedFile.existsSync()) {
       approvedText = approvedFile.readAsStringSync();
@@ -120,7 +120,7 @@ $bottomBar''');
 
       if (differences.isNotEmpty) {
         _allTestsPassed = false;
-        printGitDiffs(testDescription, differences, true);
+        printGitDiffs(unapprovedFullPath, differences, true);
         throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
       }
     }

@@ -11,7 +11,7 @@ void main(List<String> args) async {
   List<Future<void>> tasks = [];
 
   void processUnapprovedFile(File unapprovedFile) {
-    if (unapprovedFile.existsSync()) {
+    if (!unapprovedFile.existsSync()) {
       print(topBar);
       print('Error: the file below does not exist for review comparison:');
       print(unapprovedFile.path);

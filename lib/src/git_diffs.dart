@@ -4,12 +4,16 @@ import 'dart:io';
 
 import 'common.dart';
 
-void printGitDiffs(String testDescription, String differences, bool showTip) {
+void printGitDiffs(String unapprovedFullPath, String differences, bool showTip) {
+  const blueCliColor = '\x1B[94m';
+  const resetCliColor = '\x1B[0m';
+
   print(topBar);
-  print("Results of git diff during approvalTest('$testDescription'):");
+  print('Results of git diff:');
   print(differences.trim());
   if (showTip) {
-    print("● To review this test result, run 'dart run approved:review'");
+    print("${blueCliColor}To review this result, run:$resetCliColor dart run approved:review '$unapprovedFullPath'");
+    print("${blueCliColor}To review all results, run:$resetCliColor dart run approved:review");
   }
   print(bottomBar);
 }
