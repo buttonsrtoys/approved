@@ -7,22 +7,45 @@ import 'package:approved/src/common.dart';
 // ignore: avoid_relative_lib_imports
 import '../lib/src/git_diffs.dart';
 
-void main() async {
-  final searchDirectory = Directory.current;
-
+void main(List<String> args) async {
   List<Future<void>> tasks = [];
 
-  /// Recursively search for current files
-  await for (final file in searchDirectory.list(recursive: true)) {
-    if (file.path.endsWith('.unapproved.txt')) {
-      final reviewFile = file;
-      final approvedFileName = file.path.replaceAll('.unapproved.txt', '.approved.txt');
-      final approvedFile = File(approvedFileName);
+  void processUnapprovedFile(File unapprovedFile) {
+    if (unapprovedFile.existsSync()) {
+      print(topBar);
+      print('Error: the file below does not exist for review comparison:');
+      print(unapprovedFile.path);
+      print(bottomBar);
+      return;
+    }
 
-      if (approvedFile.existsSync()) {
-        tasks.add(processFile(approvedFile, reviewFile));
+    final approvedFileName = unapprovedFile.path.replaceAll('.unapproved.txt', '.approved.txt');
+    final approvedFile = File(approvedFileName);
+
+    if (approvedFile.existsSync()) {
+      tasks.add(processFile(approvedFile, unapprovedFile));
+    } else {
+      print(topBar);
+      print('Error: the file below does not exist for review comparison:');
+      print(approvedFile.path);
+      print(bottomBar);
+    }
+  }
+
+  /// If no args, then searching the whole project
+  if (args.isEmpty) {
+    final searchDirectory = Directory.current;
+
+    /// Recursively search for current files
+    await for (final file in searchDirectory.list(recursive: true)) {
+      if (file.path.endsWith('.unapproved.txt')) {
+        processUnapprovedFile(file as File);
       }
     }
+  } else {
+    /// args is not empty, so running a single file review
+    final unapprovedFile = File(args[0]);
+    processUnapprovedFile(unapprovedFile);
   }
 
   await Future.wait(tasks);

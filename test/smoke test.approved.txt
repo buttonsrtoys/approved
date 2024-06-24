@@ -1,1 +1,1 @@
-Text: {data: 'Testing 1, 2, 3', count: 1}
+<No approved text yet>
