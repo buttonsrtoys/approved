@@ -11,10 +11,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'git_diffs.dart';
 
 Set<String>? _widgetNames;
-const _approvedExtension = 'approved.txt';
-const _unapprovedExtension = 'unapproved.txt';
+const approvedExtension = 'approved.txt';
+const unapprovedExtension = 'unapproved.txt';
 final _executedApprovedFullPaths = <String>{};
 bool _allTestsPassed = true;
+
+const diffReviewHeader = 'Results of git diff:';
+const firstReviewHeader = 'Data for review:';
 
 class Approved {
   /// Initializes the approval test by building a database of project classes.
@@ -38,15 +41,15 @@ class Approved {
 
     final testPath = _testFilePath();
     final testDirectory = Directory(testPath);
-    final approvedFullPaths = testDirectory.filesWithExtension('.$_approvedExtension').map((file) => file.path).toSet();
+    final approvedFullPaths = testDirectory.filesWithExtension('.$approvedExtension').map((file) => file.path).toSet();
     final unapprovedFullPaths =
-        testDirectory.filesWithExtension('.$_unapprovedExtension').map((file) => file.path).toSet();
+        testDirectory.filesWithExtension('.$unapprovedExtension').map((file) => file.path).toSet();
 
     for (final approvedFullPath in _executedApprovedFullPaths) {
       if (approvedFullPaths.contains(approvedFullPath)) {
         approvedFullPaths.remove(approvedFullPath);
       }
-      final unapprovedFullPath = approvedFullPath.replaceAll(_approvedExtension, _unapprovedExtension);
+      final unapprovedFullPath = approvedFullPath.replaceAll(approvedExtension, unapprovedExtension);
       if (unapprovedFullPaths.contains(unapprovedFullPath)) {
         unapprovedFullPaths.remove(unapprovedFullPath);
       }
@@ -77,14 +80,13 @@ class Approved {
 
 Future<void> approvalTest(
   String testDescription,
-  String textForReview,
+  String dataString,
 ) async {
   try {
     String outputPath = _testFilePath();
 
-    final approvedFullPath = '$outputPath/$testDescription.$_approvedExtension';
-    final unapprovedFullPath = '$outputPath/$testDescription.$_unapprovedExtension';
-    String approvedText = '<No approved text yet>';
+    final approvedFullPath = '$outputPath/$testDescription.$approvedExtension';
+    final unapprovedFullPath = '$outputPath/$testDescription.$unapprovedExtension';
 
     if (_executedApprovedFullPaths.contains(approvedFullPath)) {
       _allTestsPassed = false;
@@ -101,28 +103,28 @@ $bottomBar''');
     _executedApprovedFullPaths.add(approvedFullPath);
 
     final approvedFile = File(approvedFullPath);
-    final currentFile = File(unapprovedFullPath);
+    final unapprovedFile = File(unapprovedFullPath);
 
+    String? textForReview;
     if (approvedFile.existsSync()) {
-      approvedText = approvedFile.readAsStringSync();
+      final approvedText = approvedFile.readAsStringSync();
+      if (approvedText == dataString.endWithNewline) {
+        if (unapprovedFile.existsSync()) {
+          unapprovedFile.deleteSync();
+        }
+      } else {
+        unapprovedFile.writeAsStringSync(dataString.endWithNewline);
+        final gitDiff = gitDiffFiles(approvedFile, unapprovedFile);
+        textForReview = '$diffReviewHeader\n$gitDiff';
+      }
     } else {
-      approvedFile.writeAsStringSync(approvedText.endWithNewline);
+      textForReview = '$firstReviewHeader\n$dataString';
     }
 
-    if (approvedText == textForReview.endWithNewline) {
-      if (currentFile.existsSync()) {
-        currentFile.deleteSync();
-      }
-    } else {
-      currentFile.writeAsStringSync(textForReview.endWithNewline);
-
-      final differences = gitDiffFiles(approvedFile, currentFile);
-
-      if (differences.isNotEmpty) {
-        _allTestsPassed = false;
-        printGitDiffs(unapprovedFullPath, differences, true);
-        throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
-      }
+    if (textForReview != null) {
+      _allTestsPassed = false;
+      printGitDiffs(unapprovedFullPath, textForReview, true);
+      throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
     }
   } catch (e) {
     print(e.toString());

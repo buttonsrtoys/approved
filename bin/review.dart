@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:approved/approved.dart';
 import 'package:approved/src/common.dart';
 
 // ignore: avoid_relative_lib_imports
@@ -25,10 +26,7 @@ void main(List<String> args) async {
     if (approvedFile.existsSync()) {
       tasks.add(processFile(approvedFile, unapprovedFile));
     } else {
-      print(topBar);
-      print('Error: the file below does not exist for review comparison:');
-      print(approvedFile.path);
-      print(bottomBar);
+      tasks.add(processFile(null, unapprovedFile));
     }
   }
 
@@ -54,12 +52,18 @@ void main(List<String> args) async {
 }
 
 /// Check of the files are different using "git diff"
-Future<void> processFile(File approvedFile, FileSystemEntity reviewFile) async {
-  final resultString = gitDiffFiles(approvedFile, reviewFile);
+Future<void> processFile(File? approvedFile, File unapprovedFile) async {
+  late String resultString;
+  if (approvedFile == null) {
+    final unapprovedText = unapprovedFile.readAsStringSync();
+    resultString = '$firstReviewHeader\n$unapprovedText';
+  } else {
+    final gitDiff = gitDiffFiles(approvedFile, unapprovedFile);
+    resultString = '$diffReviewHeader\n$gitDiff';
+  }
 
-  if (resultString.isNotEmpty || resultString.isNotEmpty) {
-    String fileNameWithoutExtension = approvedFile.path.split('/').last.split('.').first;
-    printGitDiffs(fileNameWithoutExtension, resultString, false);
+  if (resultString.isNotEmpty) {
+    printGitDiffs(unapprovedFile.path, resultString, false);
 
     String? firstCharacter;
 
@@ -67,23 +71,24 @@ Future<void> processFile(File approvedFile, FileSystemEntity reviewFile) async {
       stdout.write('Accept changes? (y/N/[v]iew): ');
       final response = stdin.readLineSync()?.trim().toLowerCase();
 
-      if (response == null || response.isEmpty) {
-        firstCharacter = null;
-      } else {
+      firstCharacter = null;
+      if (response != null && response.isNotEmpty) {
         firstCharacter = response[0];
       }
 
+      final unapprovedFilename = unapprovedFile.path;
+      final approvedFilename = unapprovedFile.path.replaceAll(unapprovedExtension, approvedExtension);
+
       if (firstCharacter == 'y') {
-        await approvedFile.delete();
-        await reviewFile.rename(approvedFile.path);
+        if (approvedFile != null) {
+          await approvedFile.delete();
+        }
+        await unapprovedFile.rename(approvedFilename);
         print('Approval test approved');
       } else if (firstCharacter == 'v') {
         if (isCodeCommandAvailable()) {
-          final approvedFilename = approvedFile.path;
-          final reviewFilename = reviewFile.path;
-
-          print("Executing 'code --diff $approvedFilename $reviewFilename'");
-          final processResult = Process.runSync('code', ['--diff', approvedFilename, reviewFilename]);
+          print("Executing 'code --diff $approvedFilename $unapprovedFilename'");
+          final processResult = Process.runSync('code', ['--diff', approvedFilename, unapprovedFilename]);
           print('processResult: ${processResult.toString()}');
         } else {
           print('''$topBar
