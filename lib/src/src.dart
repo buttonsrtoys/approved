@@ -36,15 +36,21 @@ class Approved {
 
     final testPath = _testFilePath();
     final testDirectory = Directory(testPath);
-    final approvedFullPaths = testDirectory.filesWithExtension('.$approvedExtension').map((file) => file.path).toSet();
-    final unapprovedFullPaths =
-        testDirectory.filesWithExtension('.$unapprovedExtension').map((file) => file.path).toSet();
+    final approvedFullPaths = testDirectory
+        .filesWithExtension('.$approvedExtension')
+        .map((file) => file.path)
+        .toSet();
+    final unapprovedFullPaths = testDirectory
+        .filesWithExtension('.$unapprovedExtension')
+        .map((file) => file.path)
+        .toSet();
 
     for (final approvedFullPath in _executedApprovedFullPaths) {
       if (approvedFullPaths.contains(approvedFullPath)) {
         approvedFullPaths.remove(approvedFullPath);
       }
-      final unapprovedFullPath = approvedFullPath.replaceAll(approvedExtension, unapprovedExtension);
+      final unapprovedFullPath =
+          approvedFullPath.replaceAll(approvedExtension, unapprovedExtension);
       if (unapprovedFullPaths.contains(unapprovedFullPath)) {
         unapprovedFullPaths.remove(unapprovedFullPath);
       }
@@ -81,7 +87,8 @@ Future<void> approvalTest(
     String outputPath = _testFilePath();
 
     final approvedFullPath = '$outputPath/$testDescription.$approvedExtension';
-    final unapprovedFullPath = '$outputPath/$testDescription.$unapprovedExtension';
+    final unapprovedFullPath =
+        '$outputPath/$testDescription.$unapprovedExtension';
 
     if (_executedApprovedFullPaths.contains(approvedFullPath)) {
       _allTestsPassed = false;
@@ -100,26 +107,28 @@ $bottomBar''');
     final approvedFile = File(approvedFullPath);
     final unapprovedFile = File(unapprovedFullPath);
 
+    if (unapprovedFile.existsSync()) {
+      unapprovedFile.deleteSync();
+    }
+
     String? textForReview;
     if (approvedFile.existsSync()) {
       final approvedText = approvedFile.readAsStringSync();
-      if (approvedText == dataString.endWithNewline) {
-        if (unapprovedFile.existsSync()) {
-          unapprovedFile.deleteSync();
-        }
-      } else {
+      if (approvedText != dataString.endWithNewline) {
         unapprovedFile.writeAsStringSync(dataString.endWithNewline);
         final gitDiff = gitDiffFiles(approvedFile, unapprovedFile);
         textForReview = '$diffReviewHeader\n$gitDiff';
       }
     } else {
+      unapprovedFile.writeAsStringSync(dataString.endWithNewline);
       textForReview = '$firstReviewHeader\n$dataString';
     }
 
     if (textForReview != null) {
       _allTestsPassed = false;
       printGitDiffs(unapprovedFullPath, textForReview, true);
-      throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
+      throw Exception(
+          "Approval test '$testDescription' failed. The file diff is listed above.");
     }
   } catch (e) {
     print(e.toString());
@@ -161,10 +170,12 @@ $bottomBar''');
   ///
   /// [description] is the name of the test. It is appended to the description in [Tester].
   /// [textForReview] is the meta data text used in the approval test.
-  Future<void> approvalTest([String? description, String? textForReview]) async {
+  Future<void> approvalTest(
+      [String? description, String? textForReview]) async {
     final resultCompleter = Completer<void>();
     final widgetsMetaCompleter = Completer<String>();
-    String updatedTestDescription = description == null ? testDescription : '$testDescription $description';
+    String updatedTestDescription =
+        description == null ? testDescription : '$testDescription $description';
 
     // Get the test path before the stack gets too deep.
     _testFilePath();
@@ -178,7 +189,8 @@ $bottomBar''');
       widgetsMetaCompleter.complete(textForReview);
     }
     widgetsMetaCompleter.future.then((value) {
-      resultCompleter.complete(_globalApprovalTest(updatedTestDescription, value));
+      resultCompleter
+          .complete(_globalApprovalTest(updatedTestDescription, value));
     });
     return resultCompleter.future;
   }
@@ -203,13 +215,16 @@ String _testFilePath() {
 
   final stackTrace = StackTrace.current;
   final lines = stackTrace.toString().split('\n');
-  final pathLine = lines.firstWhere((line) => line.contains('_test.dart'), orElse: () => '');
+  final pathLine =
+      lines.firstWhere((line) => line.contains('_test.dart'), orElse: () => '');
 
   if (pathLine.isNotEmpty) {
     var match = RegExp(r'\(file:\/\/(.*\/)').firstMatch(pathLine);
     if (match != null && match.groupCount > 0) {
       result = Uri.parse(match.group(1)!).toFilePath();
-      result = result.endsWith('/') ? result.substring(0, result.length - 1) : result;
+      result = result.endsWith('/')
+          ? result.substring(0, result.length - 1)
+          : result;
     }
   }
 

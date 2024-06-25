@@ -12,12 +12,12 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await tester.approvalTest('should display 0');
+      await tester.approvalTest();
 
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
 
-      await tester.approvalTest('should display 1');
+      await tester.approvalTest('after FAB press');
     });
   });
 }
