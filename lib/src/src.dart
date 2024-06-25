@@ -11,13 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'git_diffs.dart';
 
 Set<String>? _widgetNames;
-const approvedExtension = 'approved.txt';
-const unapprovedExtension = 'unapproved.txt';
 final _executedApprovedFullPaths = <String>{};
 bool _allTestsPassed = true;
-
-const diffReviewHeader = 'Results of git diff:';
-const firstReviewHeader = 'Data for review:';
 
 class Approved {
   /// Initializes the approval test by building a database of project classes.

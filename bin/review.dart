@@ -2,7 +2,6 @@
 
 import 'dart:io';
 
-import 'package:approved/approved.dart';
 import 'package:approved/src/common.dart';
 
 // ignore: avoid_relative_lib_imports

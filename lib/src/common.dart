@@ -2,8 +2,10 @@ import 'dart:io';
 
 const topBar = '▼▼▼▼▼▼▼▼';
 const bottomBar = '▲▲▲▲▲▲▲▲';
-// const topBar = '▶▶▶▶';
-// const bottomBar = '◀◀◀◀';
+const firstReviewHeader = 'Data for review:';
+const diffReviewHeader = 'Results of git diff:';
+const approvedExtension = 'approved.txt';
+const unapprovedExtension = 'unapproved.txt';
 
 /// [String] extension
 extension StringApprovedExtension on String {
