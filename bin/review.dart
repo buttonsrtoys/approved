@@ -86,9 +86,15 @@ Future<void> processFile(File? approvedFile, File unapprovedFile) async {
         print('Approval test approved');
       } else if (firstCharacter == 'v') {
         if (isCodeCommandAvailable()) {
-          print("Executing 'code --diff $approvedFilename $unapprovedFilename'");
-          final processResult = Process.runSync('code', ['--diff', approvedFilename, unapprovedFilename]);
-          print('processResult: ${processResult.toString()}');
+          if (approvedFile == null) {
+            print("Executing 'code $unapprovedFilename'");
+            final processResult = Process.runSync('code', [unapprovedFilename]);
+            print('______processResult: ${processResult.toString()}');
+          } else {
+            print("Executing 'code --diff $approvedFilename $unapprovedFilename'");
+            final processResult = Process.runSync('code', ['--diff', approvedFilename, unapprovedFilename]);
+            print('______processResult: ${processResult.toString()}');
+          }
         } else {
           print('''$topBar
     To enable the 'v' command, your system must be configured to run VSCode from the command line:
