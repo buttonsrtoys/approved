@@ -9,7 +9,6 @@ void printGitDiffs(String unapprovedFullPath, String differences, bool showTip) 
   const resetCliColor = '\x1B[0m';
 
   print(topBar);
-  print('Results of git diff:');
   print(differences.trim());
   if (showTip) {
     print("${blueCliColor}To review this result, run:$resetCliColor dart run approved:review '$unapprovedFullPath'");
