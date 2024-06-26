@@ -6,6 +6,7 @@ const firstReviewHeader = 'Data for review:';
 const diffReviewHeader = 'Results of git diff:';
 const approvedExtension = 'approved.txt';
 const unapprovedExtension = 'unapproved.txt';
+const resourceLocalPath = './test/.approved';
 
 /// [String] extension
 extension StringApprovedExtension on String {

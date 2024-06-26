@@ -8,8 +8,8 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:approved/src/common.dart';
 
-final _widgetNamesDir = Directory('./test/approved');
-final _widgetNamesPath = '${_widgetNamesDir.path}/class_names.txt';
+final _resourceDir = Directory(resourceLocalPath);
+final _widgetNamesPath = '${_resourceDir.path}/class_names.txt';
 
 Future<Set<String>> getWidgetNames() async {
   final resultCompleter = Completer<Set<String>>();
@@ -23,10 +23,10 @@ Future<Set<String>> getWidgetNames() async {
       final libPath = '${Directory.current.absolute.path}/lib';
       stdout.write("package:approved: searching for class names in $libPath...");
       extractWidgetNames(libPath).then((widgetsList) {
-        if (!_widgetNamesDir.existsSync()) {
-          _widgetNamesDir.createSync();
+        if (!_resourceDir.existsSync()) {
+          _resourceDir.createSync();
         }
-        _widgetNamesDir.createSync();
+        _resourceDir.createSync();
         final widgetsFile = File(_widgetNamesPath);
         widgetsFile.createSync();
         const header = '''
