@@ -11,8 +11,8 @@ void printGitDiffs(String unapprovedFullPath, String differences, bool showTip) 
   print(topBar);
   print(differences.trim());
   if (showTip) {
-    print("${blueCliColor}To review this result, run:$resetCliColor dart run approved:review '$unapprovedFullPath'");
-    print("${blueCliColor}To review all results, run:$resetCliColor dart run approved:review");
+    print("${blueCliColor}To review, run:$resetCliColor dart run approved:review '$unapprovedFullPath'");
+    print("${blueCliColor}To review all, run:$resetCliColor dart run approved:review");
   }
   print(bottomBar);
 }
