@@ -30,7 +30,7 @@ Write this:
         await tester.approvalTest();
     });
 
-## Introduction videos
+## Quick Start Videos
 
 [Here's a 60-second overview to package:approved](https://www.youtube.com)
 
@@ -80,6 +80,23 @@ calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setU
         tearDownAll(() {
             Approved.tearDownAll();
         });
+
+## Non-widget Approval Tests
+
+Approval tests can be used on any type of test, not just widget states. So, approval tests can be 
+used for unit testing, bloc testing, and more. 
+
+To review test data that isn't widget states, rather than calling the `tester.approvalTest`, simply
+call `approvalTest` with your test data in text format:
+
+    test('my initialization test', () {
+        final myObject = MyObject();
+
+        approvalTest('myObject builds correctly', myObject.toString());
+    });
+
+The same approach applies to any data that can be represented as a text file, including json, lists,
+sets, maps, etc.
 
 ## More Information on Approval Tests
 
