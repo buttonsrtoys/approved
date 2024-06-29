@@ -32,9 +32,11 @@ Write this:
 
 ## Introduction videos
 
-Here's a 60-second overview video.
+[Here's a 60-second overview to package:approved](https://www.youtube.com)
 
-Here's a video that get's into the weeds a bit.
+[Here's a 5-minute video with enough info to get you started](https://www.youtube.com)
+
+# TL;DR
 
 ## What are Approval Tests?
 
