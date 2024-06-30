@@ -1,2 +1,0 @@
-Text: {key: 'Counter', data: '1', count: 1}
-Text: {key: 'Counter', data: '0', count: 0}

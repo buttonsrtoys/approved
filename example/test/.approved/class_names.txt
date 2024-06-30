@@ -2,3 +2,4 @@
 # Below is a list of class found in the project /lib folder.
 MyApp
 MyHomePage
+Person

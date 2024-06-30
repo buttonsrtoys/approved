@@ -114,7 +114,7 @@ $bottomBar''');
       }
     } else {
       unapprovedFile.writeAsStringSync(dataString.endWithNewline);
-      textForReview = '$firstReviewHeader\n$dataString';
+      textForReview = dataString;
     }
 
     if (textForReview != null) {

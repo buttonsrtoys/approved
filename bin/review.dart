@@ -30,28 +30,54 @@ void main(List<String> args) async {
     }
   }
 
-  /// If no args, then searching the whole project
-  if (args.isEmpty || args[0].isEmpty) {
+  Future<List<File>> getUnapprovedFiles() async {
+    final files = <File>[];
     final searchDirectory = Directory.current;
 
-    /// Recursively search for current files
     await for (final file in searchDirectory.list(recursive: true)) {
       if (file.path.endsWith('.unapproved.txt')) {
+        files.add(file as File);
+      }
+    }
+
+    return files;
+  }
+
+  /// If no args, then searching the whole project
+  if (args.isEmpty || args[0].isEmpty) {
+    for (final file in await getUnapprovedFiles()) {
+      if (file.path.endsWith('.unapproved.txt')) {
         isProcessingTasks = true;
-        processUnapprovedFile(file as File);
+        processUnapprovedFile(file);
       }
     }
   } else {
     /// If here, have args. If arg is an option...
     if (args[0][0] == '-') {
       if (args[0] == '--help') {
-        print('''To review a single .unapproved.txt file for approval, run
-    dart run approved:review '/path/to/file/filename.unapproved.txt'
-To review all unapproved test results for a project, run
-    dart run approved:review
-To view this help menu, run
-    dart run approved:review --help
-Additional commands for "review" are planned and will be listed here.''');
+        print('''Manage your package:approved files.
+
+Common commands:
+
+  dart run approved:review <full path to .unapproved.txt file>
+    Reviews a single .unapproved.txt file
+
+  dart run approved:review 
+    Reviews all project .unapproved.txt files
+
+Usage: dart run approved:review [arguments]
+
+Options:
+--help                  Print this usage information.
+--list                  Print a list of project .unapproved.txt files.''');
+      } else if (args[0] == '--list') {
+        final files = await getUnapprovedFiles();
+        for (final file in files) {
+          print(file.path);
+        }
+        print('Found ${files.length} unapproved files.');
+      } else {
+        print("Unknown option '${args[0]}'. See '--help' for more details.");
       }
     } else {
       /// run a single file review
@@ -77,7 +103,7 @@ Future<void> processFile(File? approvedFile, File unapprovedFile) async {
   late String resultString;
   if (approvedFile == null) {
     final unapprovedText = unapprovedFile.readAsStringSync();
-    resultString = '$firstReviewHeader\n$unapprovedText';
+    resultString = "Data in '${unapprovedFile.path}':\n$unapprovedText";
   } else {
     final gitDiff = gitDiffFiles(approvedFile, unapprovedFile);
     resultString = '$diffReviewHeader\n$gitDiff';

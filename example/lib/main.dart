@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -59,4 +61,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+class Person {
+  late Map<String, dynamic> data;
+
+  Person() {
+    data = {
+      'name': 'John Doe',
+      'age': 30,
+      'email': 'john.doe@example.com',
+      'pronoun': 'they',
+    };
+  }
+
+  String toJson() => const JsonEncoder.withIndent('  ').convert(data);
 }
