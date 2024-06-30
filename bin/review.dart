@@ -9,6 +9,7 @@ import '../lib/src/git_diffs.dart';
 
 void main(List<String> args) async {
   List<Future<void>> tasks = [];
+  bool isProcessingTasks = false;
 
   void processUnapprovedFile(File unapprovedFile) {
     if (!unapprovedFile.existsSync()) {
@@ -30,24 +31,45 @@ void main(List<String> args) async {
   }
 
   /// If no args, then searching the whole project
-  if (args.isEmpty) {
+  if (args.isEmpty || args[0].isEmpty) {
     final searchDirectory = Directory.current;
 
     /// Recursively search for current files
     await for (final file in searchDirectory.list(recursive: true)) {
       if (file.path.endsWith('.unapproved.txt')) {
+        isProcessingTasks = true;
         processUnapprovedFile(file as File);
       }
     }
   } else {
-    /// args is not empty, so running a single file review
-    final unapprovedFile = File(args[0]);
-    processUnapprovedFile(unapprovedFile);
+    /// If here, have args. If arg is an option...
+    if (args[0][0] == '-') {
+      if (args[0] == '--help') {
+        print('''To review a single .unapproved.txt file for approval, run
+    dart run approved:review '/path/to/file/filename.unapproved.txt'
+To review all unapproved test results for a project, run
+    dart run approved:review
+To view this help menu, run
+    dart run approved:review --help
+Additional commands for "review" are planned and will be listed here.''');
+      }
+    } else {
+      /// run a single file review
+      final unapprovedFile = File(args[0]);
+      isProcessingTasks = true;
+      processUnapprovedFile(unapprovedFile);
+    }
   }
 
-  await Future.wait(tasks);
-
-  print('Review process completed.');
+  if (isProcessingTasks) {
+    if (tasks.isEmpty) {
+      print('No unapproved test results to review!');
+    } else {
+      final tasksCount = tasks.length;
+      await Future.wait(tasks);
+      print('Review completed. $tasksCount test results reviewed.');
+    }
+  }
 }
 
 /// Check of the files are different using "git diff"
