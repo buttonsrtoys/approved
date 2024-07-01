@@ -5,14 +5,11 @@ import 'dart:io';
 import 'common.dart';
 
 void printGitDiffs(String unapprovedFullPath, String differences, bool showTip) {
-  const blueCliColor = '\x1B[94m';
-  const resetCliColor = '\x1B[0m';
-
   print(topBar);
   print(differences.trim());
   if (showTip) {
-    print("${blueCliColor}To review, run:$resetCliColor dart run approved:review '$unapprovedFullPath'");
-    print("${blueCliColor}To review all, run:$resetCliColor dart run approved:review");
+    print("${highlightCliColor}To review, run:$resetCliColor dart run approved:review '$unapprovedFullPath'");
+    print("${highlightCliColor}To review all, run:$resetCliColor dart run approved:review");
   }
   print(bottomBar);
 }

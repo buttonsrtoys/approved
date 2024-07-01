@@ -7,6 +7,9 @@ const diffReviewHeader = 'Results of git diff:';
 const approvedExtension = 'approved.txt';
 const unapprovedExtension = 'unapproved.txt';
 const resourceLocalPath = './test/.approved';
+const unapprovedFilesPath = '$resourceLocalPath/unapproved_files.txt';
+const highlightCliColor = '\x1B[94m';
+const resetCliColor = '\x1B[0m';
 
 /// [String] extension
 extension StringApprovedExtension on String {

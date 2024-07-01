@@ -71,19 +71,40 @@ Options:
 --help                  Print this usage information.
 --list                  Print a list of project .unapproved.txt files.''');
       } else if (args[0] == '--list') {
-        final files = await getUnapprovedFiles();
-        for (final file in files) {
-          print(file.path);
+        final unapprovedFiles = await getUnapprovedFiles();
+        final fileCount = unapprovedFiles.length;
+        for (int i = 0; i < fileCount; i++) {
+          print('${i.toString().padLeft(3, ' ')} ${unapprovedFiles[i].path}');
         }
-        print('Found ${files.length} unapproved files.');
+        print('Found $fileCount unapproved files.');
+        if (fileCount > 0) {
+          print("${highlightCliColor}To review one, run:$resetCliColor dart run approved:review <index>");
+          print("${highlightCliColor}To review all, run:$resetCliColor dart run approved:review");
+        }
+
+        writeUnapprovedFiles(unapprovedFiles);
       } else {
         print("Unknown option '${args[0]}'. See '--help' for more details.");
       }
     } else {
-      /// run a single file review
-      final unapprovedFile = File(args[0]);
-      isProcessingTasks = true;
-      processUnapprovedFile(unapprovedFile);
+      /// If here, arg is a path or an index in the list of paths
+      File? unapprovedFile;
+      final arg = args[0];
+      final int? maybeIntValue = int.tryParse(arg);
+      if (maybeIntValue == null) {
+        unapprovedFile = File(arg);
+      } else {
+        final unapprovedFilePaths = readUnapprovedFiles();
+        if (maybeIntValue >= 0 && maybeIntValue < unapprovedFilePaths.length) {
+          unapprovedFile = File(unapprovedFilePaths[maybeIntValue]);
+        } else {
+          print('No unapproved file with an index of $maybeIntValue');
+        }
+      }
+      if (unapprovedFile != null) {
+        isProcessingTasks = true;
+        processUnapprovedFile(unapprovedFile);
+      }
     }
   }
 
@@ -96,6 +117,29 @@ Options:
       print('Review completed. $tasksCount test results reviewed.');
     }
   }
+}
+
+void writeUnapprovedFiles(List<File>? unapprovedFiles) {
+  final file = File(unapprovedFilesPath)..createSync(recursive: true);
+  if (unapprovedFiles == null) {
+    file.writeAsStringSync('');
+  } else {
+    file.writeAsStringSync(unapprovedFiles.map((file) => file.path).join('\n'));
+  }
+}
+
+List<String> readUnapprovedFiles() {
+  List<String> result = <String>[];
+
+  final file = File(unapprovedFilesPath);
+  if (file.existsSync()) {
+    String fileContents = file.readAsStringSync();
+    result = fileContents.split('\n');
+  } else {
+    result = [];
+  }
+
+  return result;
 }
 
 /// Check of the files are different using "git diff"
