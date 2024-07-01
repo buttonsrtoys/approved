@@ -62,14 +62,10 @@ perform an approval test by calling `tester.approvalTest`, and give your test a 
 The first time the test is run, package:approved creates an `.unapproved.txt` and uses the name of the
 test as the file name:
 
-    home page all widgets display.unapproved.txt
+    'home page all widgets display.unapproved.txt'
 
-Because this file is not yet approved, the test fails. To review the file for approval, run
-
-    dart run approved:review
-
-To include your project's custom widget types in your test, and to perform post-test checks, add 
-calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setUpAll` and 
+To include your project's custom widget types in your test file, and to perform post-test checks, add
+calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setUpAll` and
 `tearDownAll` calls, like so:
 
     main() {
@@ -80,6 +76,26 @@ calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setU
         tearDownAll(() {
             Approved.tearDownAll();
         });
+
+Because this file is not yet approved, the test fails. To review the file for approval, run
+
+    dart run approved:review
+
+The command `dart run approved:review` has additional options, including listing files, selecting
+files to review from this list by index, and more. For its current capabilities, run 
+
+    dart run approved:review --help
+
+Typing 'dart run approved:review' is tedious! To reduce your typing, alias the command in your 
+.zshrc or .bashrc file
+
+    alias review='dart run approved:review'
+
+or PowerShell profile
+
+    function review {
+        dart run approved:review
+    }
 
 ## Non-widget Approval Tests
 

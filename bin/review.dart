@@ -57,19 +57,21 @@ void main(List<String> args) async {
       if (args[0] == '--help') {
         print('''Manage your package:approved files.
 
-Common commands:
-
-  dart run approved:review <full path to .unapproved.txt file>
-    Reviews a single .unapproved.txt file
+Common usage:
 
   dart run approved:review 
     Reviews all project .unapproved.txt files
 
+  dart run approved:review --list
+    List project's .unapproved.txt files
+
 Usage: dart run approved:review [arguments]
 
-Options:
---help                  Print this usage information.
---list                  Print a list of project .unapproved.txt files.''');
+Arguments:
+--help                      Print this usage information.
+--list                      Print a list of project .unapproved.txt files.
+<index>                     Review an .unapproved.txt file indexed by --list.
+<path/to/.unapproved.txt>   Review an .unapproved.txt file.''');
       } else if (args[0] == '--list') {
         final unapprovedFiles = await getUnapprovedFiles();
         final fileCount = unapprovedFiles.length;
