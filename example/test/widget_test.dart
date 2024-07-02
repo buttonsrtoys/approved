@@ -1,6 +1,7 @@
 import 'package:approved/approved.dart';
 import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   setUpAll(() async => await Approved.setUpAll());
@@ -11,6 +12,11 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.approvalTest();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    await tester.approvalTest('after fab tap');
   });
 
   test('Default person', () {

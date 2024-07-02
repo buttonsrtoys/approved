@@ -32,9 +32,7 @@ Write this:
 
 ## Quick Start Videos
 
-[Here's a 60-second overview to package:approved](https://www.youtube.com)
-
-[Here's a 5-minute video with enough info to get you started](https://www.youtube.com)
+[Here's a 60-second overview to package:approved](https://www.youtube.com/watch?v=4X1dcDWEbJM)
 
 # TL;DR
 
