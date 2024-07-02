@@ -1,4 +1,7 @@
-## 0.0.2 (2024.7.02)
+## 0.1.1 (2024.7.03)
+Cleaned up documentation and fixed video crop.
+
+## 0.1.0 (2024.7.02)
 Added review options & docs
 
 ## 0.0.2 (2024.6.21)

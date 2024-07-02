@@ -21,7 +21,7 @@ Instead of writing:
         expect(find.text('Approved Example'), findsOneWidget);
     });
 
-Write this:
+Write:
 
     testWidgets('smoke test', (WidgetTester tester) async {
         await tester.pumpWidget(const MyApp());
@@ -32,7 +32,7 @@ Write this:
 
 ## Quick Start Videos
 
-[Here's an intro video to approval tests with package:approved](https://www.youtube.com/watch?v=4X1dcDWEbJM)
+[Here's an intro video to approval tests with package:approved](https://youtu.be/S2T4qWdTUfQ)
 
 # TL;DR
 
@@ -45,20 +45,20 @@ Because the file is written by the approval test library, rather than the develo
 maintaining code is faster, which frees up the developer to focus on feature code, rather than test
 code.
 
-## How Package:accepted Works
+## How Package:approved Works
 
 Suppose you wanted to confirm that a page loaded with all the widget you expected. To do this,
 perform an approval test by calling `tester.approvalTest`, and give your test a suitable name:
 
-    testWidget('home page', () {
+    testWidgets('home page', () {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle();
 
         await tester.approvalTest('all widgets load correctly');
     });
 
-The first time the test is run, package:approved creates an `.unapproved.txt` and uses the name of the
-test as the file name:
+The first time the test is run, package:approved creates a file with extension `.unapproved.txt` and 
+the name of the test as the filename:
 
     'home page all widgets display.unapproved.txt'
 
@@ -74,6 +74,7 @@ calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setU
         tearDownAll(() {
             Approved.tearDownAll();
         });
+    }
 
 Because this file is not yet approved, the test fails. To review the file for approval, run
 
@@ -123,11 +124,11 @@ testing. For more information on approval tests, check out the resources below.
 
 [I Regret Not Telling Dave Farley THIS about Approval Testing](https://www.youtube.com/watch?v=jOuqE_o9rmg)
 
-## Suggestions are Welcome!
+## Suggestions Welcome!
 
-Help package:approved reach more devs by showing us some 💙with a 🌟or 👍.
+Help package:approved reach more devs by showing us some 💙 with a 🌟 or 👍.
 
-Is package:approved missing a feature? Let us know by raising an Github issue or by emailing me at 
+Is package:approved missing a feature? Let us know by raising a Github issue or by emailing me at 
 richard@richardcoutts.com! 🙌
 
 Want to contribute? Send me a note and we'll discuss your idea! 🎉
