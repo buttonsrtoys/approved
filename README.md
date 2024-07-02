@@ -32,7 +32,7 @@ Write this:
 
 ## Quick Start Videos
 
-[Here's a 60-second overview to package:approved](https://www.youtube.com/watch?v=4X1dcDWEbJM)
+[Here's an intro video to approval tests with package:approved](https://www.youtube.com/watch?v=4X1dcDWEbJM)
 
 # TL;DR
 
