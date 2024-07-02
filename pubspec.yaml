@@ -1,21 +1,21 @@
 name: approved
 description: A Flutter approval-tests library for quickly writing unit, widget, and integration tests.
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/buttonsrtoys/approved
 issue_tracker: https://github.com/buttonsrtoys/approved/issues
 
 environment:
-  sdk: '>=3.4.1 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  analyzer: ^6.4.1
+  analyzer: ^6.0.0
 
 dev_dependencies:
-  flutter_lints: ^4.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true

@@ -7,36 +7,156 @@ import 'package:approved/src/common.dart';
 // ignore: avoid_relative_lib_imports
 import '../lib/src/git_diffs.dart';
 
-void main() async {
-  final searchDirectory = Directory.current;
-
+void main(List<String> args) async {
   List<Future<void>> tasks = [];
+  bool isProcessingTasks = false;
 
-  /// Recursively search for current files
-  await for (final file in searchDirectory.list(recursive: true)) {
-    if (file.path.endsWith('.unapproved.txt')) {
-      final reviewFile = file;
-      final approvedFileName = file.path.replaceAll('.unapproved.txt', '.approved.txt');
-      final approvedFile = File(approvedFileName);
+  void processUnapprovedFile(File unapprovedFile) {
+    if (!unapprovedFile.existsSync()) {
+      print(topBar);
+      print('Error: the file below does not exist for review comparison:');
+      print(unapprovedFile.path);
+      print(bottomBar);
+      return;
+    }
 
-      if (approvedFile.existsSync()) {
-        tasks.add(processFile(approvedFile, reviewFile));
+    final approvedFileName = unapprovedFile.path.replaceAll('.unapproved.txt', '.approved.txt');
+    final approvedFile = File(approvedFileName);
+
+    if (approvedFile.existsSync()) {
+      tasks.add(processFile(approvedFile, unapprovedFile));
+    } else {
+      tasks.add(processFile(null, unapprovedFile));
+    }
+  }
+
+  Future<List<File>> getUnapprovedFiles() async {
+    final files = <File>[];
+    final searchDirectory = Directory.current;
+
+    await for (final file in searchDirectory.list(recursive: true)) {
+      if (file.path.endsWith('.unapproved.txt')) {
+        files.add(file as File);
+      }
+    }
+
+    return files;
+  }
+
+  /// If no args, then searching the whole project
+  if (args.isEmpty || args[0].isEmpty) {
+    for (final file in await getUnapprovedFiles()) {
+      if (file.path.endsWith('.unapproved.txt')) {
+        isProcessingTasks = true;
+        processUnapprovedFile(file);
+      }
+    }
+  } else {
+    /// If here, have args. If arg is an option...
+    if (args[0][0] == '-') {
+      if (args[0] == '--help') {
+        print('''Manage your package:approved files.
+
+Common usage:
+
+  dart run approved:review 
+    Reviews all project .unapproved.txt files
+
+  dart run approved:review --list
+    List project's .unapproved.txt files
+
+Usage: dart run approved:review [arguments]
+
+Arguments:
+--help                      Print this usage information.
+--list                      Print a list of project .unapproved.txt files.
+<index>                     Review an .unapproved.txt file indexed by --list.
+<path/to/.unapproved.txt>   Review an .unapproved.txt file.''');
+      } else if (args[0] == '--list') {
+        final unapprovedFiles = await getUnapprovedFiles();
+        final fileCount = unapprovedFiles.length;
+        for (int i = 0; i < fileCount; i++) {
+          print('${i.toString().padLeft(3, ' ')} ${unapprovedFiles[i].path}');
+        }
+        print('Found $fileCount unapproved files.');
+        if (fileCount > 0) {
+          print("${highlightCliColor}To review one, run:$resetCliColor dart run approved:review <index>");
+          print("${highlightCliColor}To review all, run:$resetCliColor dart run approved:review");
+        }
+
+        writeUnapprovedFiles(unapprovedFiles);
+      } else {
+        print("Unknown option '${args[0]}'. See '--help' for more details.");
+      }
+    } else {
+      /// If here, arg is a path or an index in the list of paths
+      File? unapprovedFile;
+      final arg = args[0];
+      final int? maybeIntValue = int.tryParse(arg);
+      if (maybeIntValue == null) {
+        unapprovedFile = File(arg);
+      } else {
+        final unapprovedFilePaths = readUnapprovedFiles();
+        if (maybeIntValue >= 0 && maybeIntValue < unapprovedFilePaths.length) {
+          unapprovedFile = File(unapprovedFilePaths[maybeIntValue]);
+        } else {
+          print('No unapproved file with an index of $maybeIntValue');
+        }
+      }
+      if (unapprovedFile != null) {
+        isProcessingTasks = true;
+        processUnapprovedFile(unapprovedFile);
       }
     }
   }
 
-  await Future.wait(tasks);
+  if (isProcessingTasks) {
+    if (tasks.isEmpty) {
+      print('No unapproved test results to review!');
+    } else {
+      final tasksCount = tasks.length;
+      await Future.wait(tasks);
+      print('Review completed. $tasksCount test results reviewed.');
+    }
+  }
+}
 
-  print('Review process completed.');
+void writeUnapprovedFiles(List<File>? unapprovedFiles) {
+  final file = File(unapprovedFilesPath)..createSync(recursive: true);
+  if (unapprovedFiles == null) {
+    file.writeAsStringSync('');
+  } else {
+    file.writeAsStringSync(unapprovedFiles.map((file) => file.path).join('\n'));
+  }
+}
+
+List<String> readUnapprovedFiles() {
+  List<String> result = <String>[];
+
+  final file = File(unapprovedFilesPath);
+  if (file.existsSync()) {
+    String fileContents = file.readAsStringSync();
+    result = fileContents.split('\n');
+  } else {
+    result = [];
+  }
+
+  return result;
 }
 
 /// Check of the files are different using "git diff"
-Future<void> processFile(File approvedFile, FileSystemEntity reviewFile) async {
-  final resultString = gitDiffFiles(approvedFile, reviewFile);
+Future<void> processFile(File? approvedFile, File unapprovedFile) async {
+  late String resultString;
+  if (approvedFile == null) {
+    final unapprovedText = unapprovedFile.readAsStringSync();
+    resultString = "Data in '${unapprovedFile.path}':\n$unapprovedText";
+  } else {
+    final gitDiff = gitDiffFiles(approvedFile, unapprovedFile);
+    resultString = '$diffReviewHeader\n$gitDiff';
+  }
 
-  if (resultString.isNotEmpty || resultString.isNotEmpty) {
-    String fileNameWithoutExtension = approvedFile.path.split('/').last.split('.').first;
-    printGitDiffs(fileNameWithoutExtension, resultString);
+  if (resultString.isNotEmpty) {
+    printGitDiffs(unapprovedFile.path, resultString, false);
 
     String? firstCharacter;
 
@@ -44,24 +164,31 @@ Future<void> processFile(File approvedFile, FileSystemEntity reviewFile) async {
       stdout.write('Accept changes? (y/N/[v]iew): ');
       final response = stdin.readLineSync()?.trim().toLowerCase();
 
-      if (response == null || response.isEmpty) {
-        firstCharacter = null;
-      } else {
+      firstCharacter = null;
+      if (response != null && response.isNotEmpty) {
         firstCharacter = response[0];
       }
 
+      final unapprovedFilename = unapprovedFile.path;
+      final approvedFilename = unapprovedFile.path.replaceAll(unapprovedExtension, approvedExtension);
+
       if (firstCharacter == 'y') {
-        await approvedFile.delete();
-        await reviewFile.rename(approvedFile.path);
+        if (approvedFile != null) {
+          await approvedFile.delete();
+        }
+        await unapprovedFile.rename(approvedFilename);
         print('Approval test approved');
       } else if (firstCharacter == 'v') {
         if (isCodeCommandAvailable()) {
-          final approvedFilename = approvedFile.path;
-          final reviewFilename = reviewFile.path;
-
-          print("Executing 'code --diff $approvedFilename $reviewFilename'");
-          final processResult = Process.runSync('code', ['--diff', approvedFilename, reviewFilename]);
-          print('processResult: ${processResult.toString()}');
+          if (approvedFile == null) {
+            print("Executing 'code $unapprovedFilename'");
+            final processResult = Process.runSync('code', [unapprovedFilename]);
+            print('______processResult: ${processResult.toString()}');
+          } else {
+            print("Executing 'code --diff $approvedFilename $unapprovedFilename'");
+            final processResult = Process.runSync('code', ['--diff', approvedFilename, unapprovedFilename]);
+            print('______processResult: ${processResult.toString()}');
+          }
         } else {
           print('''$topBar
     To enable the 'v' command, your system must be configured to run VSCode from the command line:

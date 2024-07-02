@@ -11,8 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'git_diffs.dart';
 
 Set<String>? _widgetNames;
-const _approvedExtension = 'approved.txt';
-const _unapprovedExtension = 'unapproved.txt';
 final _executedApprovedFullPaths = <String>{};
 bool _allTestsPassed = true;
 
@@ -38,15 +36,15 @@ class Approved {
 
     final testPath = _testFilePath();
     final testDirectory = Directory(testPath);
-    final approvedFullPaths = testDirectory.filesWithExtension('.$_approvedExtension').map((file) => file.path).toSet();
+    final approvedFullPaths = testDirectory.filesWithExtension('.$approvedExtension').map((file) => file.path).toSet();
     final unapprovedFullPaths =
-        testDirectory.filesWithExtension('.$_unapprovedExtension').map((file) => file.path).toSet();
+        testDirectory.filesWithExtension('.$unapprovedExtension').map((file) => file.path).toSet();
 
     for (final approvedFullPath in _executedApprovedFullPaths) {
       if (approvedFullPaths.contains(approvedFullPath)) {
         approvedFullPaths.remove(approvedFullPath);
       }
-      final unapprovedFullPath = approvedFullPath.replaceAll(_approvedExtension, _unapprovedExtension);
+      final unapprovedFullPath = approvedFullPath.replaceAll(approvedExtension, unapprovedExtension);
       if (unapprovedFullPaths.contains(unapprovedFullPath)) {
         unapprovedFullPaths.remove(unapprovedFullPath);
       }
@@ -77,50 +75,52 @@ class Approved {
 
 Future<void> approvalTest(
   String testDescription,
-  String textForReview,
+  String dataString,
 ) async {
   try {
     String outputPath = _testFilePath();
 
-    final approvedFullPath = '$outputPath/$testDescription.$_approvedExtension';
-    final currentFullPath = '$outputPath/$testDescription.$_unapprovedExtension';
-    String approvedText = '<No approved text yet>';
+    final approvedFullPath = '$outputPath/$testDescription.$approvedExtension';
+    final unapprovedFullPath = '$outputPath/$testDescription.$unapprovedExtension';
 
     if (_executedApprovedFullPaths.contains(approvedFullPath)) {
       _allTestsPassed = false;
-      throw Exception('''$topBar
-    An approvalTest with description '$testDescription' was already created in path '$outputPath'.
-    Try adding a unique description to approvedTest. E.g.,
+      print('''$topBar
+    A call to approvalTest with a prior test description '$testDescription' was detected in path '$outputPath'.
+    Approval tests must have unique descriptions. E.g.,
     
         await tester.approvalTest('my unique description');
 $bottomBar''');
+      throw Exception(
+          'approvalTest failed due to redundant description. See message above for instructions on how to fix.');
     }
 
     _executedApprovedFullPaths.add(approvedFullPath);
 
     final approvedFile = File(approvedFullPath);
-    final currentFile = File(currentFullPath);
+    final unapprovedFile = File(unapprovedFullPath);
 
-    if (approvedFile.existsSync()) {
-      approvedText = approvedFile.readAsStringSync();
-    } else {
-      approvedFile.writeAsStringSync(approvedText.endWithNewline);
+    if (unapprovedFile.existsSync()) {
+      unapprovedFile.deleteSync();
     }
 
-    if (approvedText == textForReview.endWithNewline) {
-      if (currentFile.existsSync()) {
-        currentFile.deleteSync();
+    String? textForReview;
+    if (approvedFile.existsSync()) {
+      final approvedText = approvedFile.readAsStringSync();
+      if (approvedText != dataString.endWithNewline) {
+        unapprovedFile.writeAsStringSync(dataString.endWithNewline);
+        final gitDiff = gitDiffFiles(approvedFile, unapprovedFile);
+        textForReview = '$diffReviewHeader\n$gitDiff';
       }
     } else {
-      currentFile.writeAsStringSync(textForReview.endWithNewline);
+      unapprovedFile.writeAsStringSync(dataString.endWithNewline);
+      textForReview = dataString;
+    }
 
-      final differences = gitDiffFiles(approvedFile, currentFile);
-
-      if (differences.isNotEmpty) {
-        _allTestsPassed = false;
-        printGitDiffs(testDescription, differences);
-        throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
-      }
+    if (textForReview != null) {
+      _allTestsPassed = false;
+      printGitDiffs(unapprovedFullPath, textForReview, true);
+      throw Exception("Approval test '$testDescription' failed. The file diff is listed above.");
     }
   } catch (e) {
     print(e.toString());
@@ -136,7 +136,7 @@ extension WidgetTesterApprovedExtension on WidgetTester {
   Future<String> get widgetsString async {
     final completer = Completer<String>();
     assert(_widgetNames != null, '''$topBar
-    Looks like Approved.initialize() was not called before running an approvalTest. Typically, 
+    It appears that Approved.initialize() was not called before running an approvalTest. Typically, 
     this issue is solved by calling Approved.initialize() from within setUpAll:
     
         void setUpAll(() async {
@@ -193,7 +193,7 @@ $bottomBar''');
 /// Typically, .approved.txt files are stored alongside the flutter test file. However, there may be edge cases
 /// where the path to the test cannot be determined because the stack is too deep. If so, create a local path for
 /// storing .approved.txt
-String _previousTestFilePath = './test/approved';
+String _previousTestFilePath = resourceLocalPath;
 
 /// The path to the consumer's '..._test.dart' file that is executing the test
 ///

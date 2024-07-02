@@ -37,7 +37,7 @@ void main() {
 
   group('Approved test', () {
     testWidgets('smoke test', (WidgetTester tester) async {
-      await tester.pumpWidget(_buildApp(const Text('Testing 1, 2, 3')));
+      await tester.pumpWidget(_buildApp(const Text('Testing 1, 2, 3...')));
       await tester.pumpAndSettle();
 
       await tester.approvalTest();

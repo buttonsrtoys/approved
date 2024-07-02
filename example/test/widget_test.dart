@@ -1,23 +1,27 @@
 import 'package:approved/approved.dart';
 import 'package:example/main.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   setUpAll(() async => await Approved.setUpAll());
   tearDownAll(() async => await Approved.tearDownAll());
 
-  group('Example', () {
-    testWidgets('smoke test', (WidgetTester tester) async {
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
+  testWidgets('smoke test', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle();
 
-      await tester.approvalTest('should display 0');
+    await tester.approvalTest();
 
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
 
-      await tester.approvalTest('should display 1');
-    });
+    await tester.approvalTest('after fab tap');
+  });
+
+  test('Default person', () {
+    final person = Person();
+
+    approvalTest('confirm John Doe', person.toJson());
   });
 }
