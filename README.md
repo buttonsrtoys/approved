@@ -23,7 +23,7 @@ Instead of writing:
 
 Write:
 
-    testWidgets('smoke test', (WidgetTester tester) async {
+    testWidgets('home page', (WidgetTester tester) async {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle();
 
@@ -38,11 +38,11 @@ Write:
 
 ## What are Approval Tests?
 
-After manually testing code, developers often write automated tests to guard against regressions.
-Typically, this is done by writing code that contains the expected states of a test. Approval 
-testing is the same process, except the expected states are captured in a file instead of code. 
+Typically, tests contain hard-coded values of expected states. Approval tests also contain 
+expected values of states. The difference is the expected states of approval tests are captured 
+in a file instead of code. 
 Because the file is written by the approval test library, rather than the developer, writing and
-maintaining code is faster, which frees up the developer to focus on feature code, rather than test
+maintaining tests is faster, freeing the developer to focus on feature code, rather than test
 code.
 
 ## How Package:approved Works
