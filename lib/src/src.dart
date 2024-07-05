@@ -14,9 +14,10 @@ Set<String>? _widgetNames;
 final _executedApprovedFullPaths = <String>{};
 bool _allTestsPassed = true;
 
+/// Adds package:approved functionality to WidgetTester
 extension WidgetTesterApprovedExtension on WidgetTester {
-  /// Returns the meta data for the widgets for comparison during the approval test
-  Future<String> widgetsString(ApprovalTestOptions options) async {
+  /// Returns a string representing states of widgets.
+  Future<String> widgetStatesString({bool? showDiff}) async {
     final completer = Completer<String>();
     assert(_widgetNames != null, '''$topBar
     It appears that Approved.setUpAll() was not called before running an approvalTest. Typically, 
@@ -32,7 +33,7 @@ $bottomBar''');
       this,
       outputMeta: true,
       verbose: false,
-      compareWithPrevious: options.showDiff,
+      compareWithPrevious: showDiff ?? false,
       widgetNames: Approved.widgetNames,
     )
         .then((stringList) {
@@ -42,10 +43,35 @@ $bottomBar''');
     return completer.future;
   }
 
-  /// Performs an approval test.
+  /// Performs an approval test on widgets managed by a WidgetTester.
   ///
   /// [description] is the name of the test. It is appended to the description in [Tester].
   /// [textForReview] is the meta data text used in the approval test.
+  ///
+  /// To test the current state of the widgets:
+  ///
+  ///     testWidgets('home page', () {
+  ///         await tester.pumpWidget(const MyApp());
+  ///         await tester.pumpAndSettle();
+  ///
+  ///         await tester.approvalTest('all widgets load correctly');
+  ///     });
+  ///
+  /// To show only diffs, such as after a gesture, use ApprovalTestOptions(showDiffs: true):
+  ///
+  ///     testWidgets('home page', () {
+  ///         await tester.pumpWidget(const MyApp());
+  ///         await tester.pumpAndSettle();
+  ///
+  ///         await tester.approvalTest('all widgets load correctly');
+  ///
+  ///         await tester.tap(find.byType(FloatingActionButton));
+  ///         await tester.pumpAndSettle();
+  ///
+  ///         // Show only diffs from the previous call to tester.approvalTest() above
+  ///         await tester.approvalTest('after fab tap', ApprovalTestOptions(showDiff: true));
+  ///   });
+  ///
   Future<void> approvalTest([String? description, ApprovalTestOptions? options]) async {
     final resultCompleter = Completer<void>();
     final widgetsMetaCompleter = Completer<String>();
@@ -54,7 +80,7 @@ $bottomBar''');
     // Get the test path before the stack gets too deep.
     _testFilePath();
 
-    widgetsString(options ?? ApprovalTestOptions()).then((value) {
+    widgetStatesString(showDiff: options?.showDiff ?? false).then((value) {
       widgetsMetaCompleter.complete(value);
     });
 
@@ -71,7 +97,7 @@ $bottomBar''');
   }
 }
 
-/// An data class to hold options for the function call [approvalTest]
+/// A data class to hold options for the function call [approvalTest]
 ///
 /// [showDiff]: true to show only diffs from the previous call to [approvalTest]. False shows all of the
 /// current widget states.
@@ -83,6 +109,7 @@ class ApprovalTestOptions {
   });
 }
 
+/// A namespace for static functions for package:approved initialization and teardown
 class Approved {
   /// Initializes the approval test by building a database of project classes.
   ///
@@ -142,6 +169,20 @@ class Approved {
   static Set<String>? get widgetNames => _widgetNames;
 }
 
+/// Performs an approval test.
+///
+/// [testDescription] is the name of the test, which is used to name the associated files.
+/// [dataString] is the string to review for approval.
+///
+/// For any approval test, the data must be representable as text. If the data is not already in text
+/// format, typically a `toString` or `toJson` method is used:
+///
+///     test('MyObject test', () {
+///         final myObject = MyObject();
+///
+///         approvalTest('Confirm default MyObject', myObject.toString());
+///     });
+///
 Future<void> approvalTest(
   String testDescription,
   String dataString,
