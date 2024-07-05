@@ -14,6 +14,71 @@ Set<String>? _widgetNames;
 final _executedApprovedFullPaths = <String>{};
 bool _allTestsPassed = true;
 
+extension WidgetTesterApprovedExtension on WidgetTester {
+  /// Returns the meta data for the widgets for comparison during the approval test
+  Future<String> widgetsString(Options options) async {
+    final completer = Completer<String>();
+    assert(_widgetNames != null, '''$topBar
+    It appears that Approved.setUpAll() was not called before running an approvalTest. Typically, 
+    this issue is solved by calling Approved.setUpAll() from within setUpAll:
+    
+        void setUpAll(() async {
+          await Approved.setUpAll();
+        });
+$bottomBar''');
+
+    wm
+        .collectWidgetsMetaData(
+      this,
+      outputMeta: true,
+      verbose: false,
+      compareWithPrevious: options.showDiff,
+      widgetNames: Approved.widgetNames,
+    )
+        .then((stringList) {
+      completer.complete(stringList.join('\n'));
+    });
+
+    return completer.future;
+  }
+
+  /// Performs an approval test.
+  ///
+  /// [description] is the name of the test. It is appended to the description in [Tester].
+  /// [textForReview] is the meta data text used in the approval test.
+  Future<void> approvalTest([String? description, Options? options]) async {
+    final resultCompleter = Completer<void>();
+    final widgetsMetaCompleter = Completer<String>();
+    String updatedTestDescription = description == null ? testDescription : '$testDescription $description';
+
+    // Get the test path before the stack gets too deep.
+    _testFilePath();
+
+    widgetsString(options ?? Options()).then((value) {
+      widgetsMetaCompleter.complete(value);
+    });
+
+    widgetsMetaCompleter.future.then((value) {
+      resultCompleter.complete(_globalApprovalTest(updatedTestDescription, value));
+    });
+
+    return resultCompleter.future;
+  }
+
+  /// Output expect statements to the console.
+  Future<void> printExpects() {
+    return wm.printExpects(this);
+  }
+}
+
+class Options {
+  final bool showDiff;
+
+  Options({
+    this.showDiff = false,
+  });
+}
+
 class Approved {
   /// Initializes the approval test by building a database of project classes.
   ///
@@ -130,65 +195,6 @@ $bottomBar''');
 
 /// [_globalApprovalTest] resolves the name conflict with [WidgetTester.approvalTest]
 Future<void> Function(String, String) _globalApprovalTest = approvalTest;
-
-extension WidgetTesterApprovedExtension on WidgetTester {
-  /// Returns the meta data for the widgets for comparison during the approval test
-  Future<String> get widgetsString async {
-    final completer = Completer<String>();
-    assert(_widgetNames != null, '''$topBar
-    It appears that Approved.initialize() was not called before running an approvalTest. Typically, 
-    this issue is solved by calling Approved.initialize() from within setUpAll:
-    
-        void setUpAll(() async {
-          await Approved.initialize();
-        });
-$bottomBar''');
-
-    wm
-        .collectWidgetsMetaData(
-      this,
-      outputMeta: true,
-      verbose: false,
-      widgetNames: Approved.widgetNames,
-    )
-        .then((stringList) {
-      completer.complete(stringList.join('\n'));
-    });
-
-    return completer.future;
-  }
-
-  /// Performs an approval test.
-  ///
-  /// [description] is the name of the test. It is appended to the description in [Tester].
-  /// [textForReview] is the meta data text used in the approval test.
-  Future<void> approvalTest([String? description, String? textForReview]) async {
-    final resultCompleter = Completer<void>();
-    final widgetsMetaCompleter = Completer<String>();
-    String updatedTestDescription = description == null ? testDescription : '$testDescription $description';
-
-    // Get the test path before the stack gets too deep.
-    _testFilePath();
-
-    // If no text passed, then get the widget meta from the widget tree
-    if (textForReview == null) {
-      widgetsString.then((value) {
-        widgetsMetaCompleter.complete(value);
-      });
-    } else {
-      widgetsMetaCompleter.complete(textForReview);
-    }
-    widgetsMetaCompleter.future.then((value) {
-      resultCompleter.complete(_globalApprovalTest(updatedTestDescription, value));
-    });
-    return resultCompleter.future;
-  }
-
-  /// Output expect statements to the console.
-  Future<void> printExpects() {
-    return wm.printExpects(this);
-  }
-}
 
 /// Typically, .approved.txt files are stored alongside the flutter test file. However, there may be edge cases
 /// where the path to the test cannot be determined because the stack is too deep. If so, create a local path for

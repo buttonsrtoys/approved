@@ -16,7 +16,7 @@ void main() {
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    await tester.approvalTest('after fab tap');
+    await tester.approvalTest('after fab tap', Options(showDiff: true));
   });
 
   test('Default person', () {
