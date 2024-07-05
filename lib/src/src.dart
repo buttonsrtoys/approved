@@ -16,7 +16,7 @@ bool _allTestsPassed = true;
 
 extension WidgetTesterApprovedExtension on WidgetTester {
   /// Returns the meta data for the widgets for comparison during the approval test
-  Future<String> widgetsString(Options options) async {
+  Future<String> widgetsString(ApprovalTestOptions options) async {
     final completer = Completer<String>();
     assert(_widgetNames != null, '''$topBar
     It appears that Approved.setUpAll() was not called before running an approvalTest. Typically, 
@@ -46,7 +46,7 @@ $bottomBar''');
   ///
   /// [description] is the name of the test. It is appended to the description in [Tester].
   /// [textForReview] is the meta data text used in the approval test.
-  Future<void> approvalTest([String? description, Options? options]) async {
+  Future<void> approvalTest([String? description, ApprovalTestOptions? options]) async {
     final resultCompleter = Completer<void>();
     final widgetsMetaCompleter = Completer<String>();
     String updatedTestDescription = description == null ? testDescription : '$testDescription $description';
@@ -54,7 +54,7 @@ $bottomBar''');
     // Get the test path before the stack gets too deep.
     _testFilePath();
 
-    widgetsString(options ?? Options()).then((value) {
+    widgetsString(options ?? ApprovalTestOptions()).then((value) {
       widgetsMetaCompleter.complete(value);
     });
 
@@ -71,10 +71,14 @@ $bottomBar''');
   }
 }
 
-class Options {
+/// An data class to hold options for the function call [approvalTest]
+///
+/// [showDiff]: true to show only diffs from the previous call to [approvalTest]. False shows all of the
+/// current widget states.
+class ApprovalTestOptions {
   final bool showDiff;
 
-  Options({
+  ApprovalTestOptions({
     this.showDiff = false,
   });
 }
