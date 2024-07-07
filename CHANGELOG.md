@@ -1,3 +1,6 @@
+## 0.1.4 (2024.7.07)
+Improved long video.
+
 ## 0.1.3 (2024.7.05)
 Added short intro video.
 
