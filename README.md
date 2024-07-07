@@ -32,9 +32,9 @@ Write:
 
 ## Quick Start Videos
 
-[Here's a 60-second introduction to Flutter approval tests with package:approved](https://youtu.be/XHxqxrq_52g)
+[Here's a 60-second introduction to Flutter approval tests with package:approved](https://youtu.be/pcku-ZZPevE)
 
-[For a slightly longer and more thorough introduction, tap here](https://youtu.be/S2T4qWdTUfQ)
+[For a slightly longer and more thorough introduction, tap here](https://youtu.be/XHxqxrq_52g)
 
 # TL;DR
 
