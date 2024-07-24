@@ -9,7 +9,6 @@ import '../lib/src/git_diffs.dart';
 
 void main(List<String> args) async {
   List<Future<void>> tasks = [];
-  bool isProcessingTasks = false;
 
   void processUnapprovedFile(File unapprovedFile) {
     if (!unapprovedFile.existsSync()) {
@@ -47,7 +46,6 @@ void main(List<String> args) async {
   if (args.isEmpty || args[0].isEmpty) {
     for (final file in await getUnapprovedFiles()) {
       if (file.path.endsWith('.unapproved.txt')) {
-        isProcessingTasks = true;
         processUnapprovedFile(file);
       }
     }
@@ -78,8 +76,8 @@ Arguments:
         for (int i = 0; i < fileCount; i++) {
           print('${i.toString().padLeft(3, ' ')} ${unapprovedFiles[i].path}');
         }
-        print('Found $fileCount unapproved files.');
         if (fileCount > 0) {
+          print('Found $fileCount unapproved files, listed above.');
           print("${highlightCliColor}To review one, run:$resetCliColor dart run approved:review <index>");
           print("${highlightCliColor}To review all, run:$resetCliColor dart run approved:review");
         }
@@ -104,20 +102,17 @@ Arguments:
         }
       }
       if (unapprovedFile != null) {
-        isProcessingTasks = true;
         processUnapprovedFile(unapprovedFile);
       }
     }
   }
 
-  if (isProcessingTasks) {
-    if (tasks.isEmpty) {
-      print('No unapproved test results to review!');
-    } else {
-      final tasksCount = tasks.length;
-      await Future.wait(tasks);
-      print('Review completed. $tasksCount test results reviewed.');
-    }
+  if (tasks.isEmpty) {
+    print('Found 0 unapproved files.');
+  } else {
+    final tasksCount = tasks.length;
+    await Future.wait(tasks);
+    print('Review completed. $tasksCount test results reviewed.');
   }
 }
 

@@ -21,11 +21,16 @@ extension WidgetTesterApprovedExtension on WidgetTester {
     final completer = Completer<String>();
     assert(_widgetNames != null, '''$topBar
     It appears that Approved.setUpAll() was not called before running an approvalTest. Typically, 
-    this issue is solved by calling Approved.setUpAll() from within setUpAll:
+    this issue is solved by calling Approved.setUpAll() from within setUpAll. You may also want to call
+    Approved.tearDownAll() to perform checks after testing completes.
     
-        void setUpAll(() async {
-          await Approved.setUpAll();
-        });
+        void main() {
+            setUpAll(() async {
+                await Approved.setUpAll();
+            });
+            tearDownAll(() async {
+                Approved.tearDownAll();
+            });
 $bottomBar''');
 
     wm

@@ -1,3 +1,6 @@
+## 0.1.6 (2024.7.24)
+Improved error message and added to roadmap.
+
 ## 0.1.5 (2024.7.07)
 Fixed video links in Readme.
 
