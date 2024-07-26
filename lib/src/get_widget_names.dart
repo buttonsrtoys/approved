@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'package:analyzer/dart/analysis/context_builder.dart';
 import 'package:analyzer/dart/analysis/context_locator.dart';
@@ -20,7 +21,7 @@ Future<Set<String>> getWidgetNames() async {
         resultCompleter.complete(widgetNames);
       });
     } else {
-      final libPath = '${Directory.current.absolute.path}/lib';
+      final libPath = p.join(Directory.current.absolute.path,'lib');
       stdout.write("package:approved: searching for class names in $libPath...");
       extractWidgetNames(libPath).then((widgetsList) {
         if (!_resourceDir.existsSync()) {
@@ -61,7 +62,7 @@ Future<Set<String>> extractWidgetNames(String libPath) async {
 
   final contextBuilder = ContextBuilder();
   getFlutterSdkPath().then((path) {
-    final dartStr = '$path/bin/cache/dart-sdk';
+    final dartStr = p.join(path,'bin','cache','dart-sdk');
     final analysisContext = contextBuilder.createContext(
       contextRoot: contextRoots.first,
       sdkPath: dartStr,
@@ -98,7 +99,7 @@ Future<Set<String>> extractWidgetNames(String libPath) async {
 Future<String> getFlutterSdkPath() async {
   final completer = Completer<String>();
 
-  Process.run('flutter', ['--version', '--machine']).then((result) {
+  Process.run(Platform.isWindows? 'flutter.bat': 'flutter', ['--version', '--machine']).then((result) {
     if (result.exitCode != 0) {
       throw Exception('Failed to run flutter command: ${result.stderr}');
     }

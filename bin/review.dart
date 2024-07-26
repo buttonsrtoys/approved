@@ -177,7 +177,7 @@ Future<void> processFile(File? approvedFile, File unapprovedFile) async {
         if (isCodeCommandAvailable()) {
           if (approvedFile == null) {
             print("Executing 'code $unapprovedFilename'");
-            final processResult = Process.runSync('code', [unapprovedFilename]);
+            final processResult = Process.runSync(codeCommandName, [unapprovedFilename]);
             print('______processResult: ${processResult.toString()}');
           } else {
             print("Executing 'code --diff $approvedFilename $unapprovedFilename'");
@@ -202,7 +202,9 @@ $bottomBar''');
 }
 
 bool isCodeCommandAvailable() {
-  var result = Process.runSync('which', ['code']);
+  var result = Process.runSync(Platform.isWindows ? 'where': 'which', [codeCommandName]);
 
   return result.exitCode == 0 ? true : false;
 }
+
+String get codeCommandName => Platform.isWindows ? 'code.cmd' : 'code';
