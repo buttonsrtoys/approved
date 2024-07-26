@@ -1,3 +1,6 @@
+## 0.1.7 (2024.7.26)
+Fixes windows path for `review`
+
 ## 0.1.6 (2024.7.24)
 Improved error message and added to roadmap.
 
