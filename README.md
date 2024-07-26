@@ -64,6 +64,15 @@ the name of the test as the filename:
 
     'home page all widgets display.unapproved.txt'
 
+Because this file is not yet approved, the test fails. To review the file for approval, run
+
+    dart run approved:review
+
+The command `dart run approved:review` has additional options, including listing files, selecting
+files to review from this list by index, and more. For its current capabilities, run 
+
+    dart run approved:review --help
+
 To include your project's custom widget types in your test file, and to perform post-test checks, add
 calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setUpAll` and
 `tearDownAll` calls, like so:
@@ -77,15 +86,6 @@ calls to `Approved.setUpAll()` and `Approved.tearDownAll()` to your tests' `setU
             Approved.tearDownAll();
         });
     }
-
-Because this file is not yet approved, the test fails. To review the file for approval, run
-
-    dart run approved:review
-
-The command `dart run approved:review` has additional options, including listing files, selecting
-files to review from this list by index, and more. For its current capabilities, run 
-
-    dart run approved:review --help
 
 Typing 'dart run approved:review' is tedious! To reduce your typing, alias the command in your 
 .zshrc or .bashrc file
